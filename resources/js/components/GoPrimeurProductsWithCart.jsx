@@ -7,6 +7,7 @@ export default function GoPrimeurProductsWithCart() {
   const [subFilter, setSubFilter] = useState(null);
   const [toast, setToast] = useState(null);
   const [search, setSearch] = useState('');
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const MINIMUM_ORDER = 30;
   const FREE_DELIVERY_THRESHOLD = 50;
@@ -152,16 +153,42 @@ export default function GoPrimeurProductsWithCart() {
         </div>
       )}
 
-      <div className="flex-1 pr-80">
+      {/* Mobile Cart Toggle Button */}
+      <button
+        onClick={() => setIsCartOpen(!isCartOpen)}
+        className="lg:hidden fixed bottom-4 right-4 z-50 bg-[#4E9F3D] text-white rounded-full p-4 shadow-lg hover:bg-green-700 transition-colors"
+        aria-label="Toggle cart"
+      >
+        <div className="relative">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          {itemCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+              {itemCount}
+            </span>
+          )}
+        </div>
+      </button>
+
+      {/* Mobile Overlay */}
+      {isCartOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setIsCartOpen(false)}
+        />
+      )}
+
+      <div className="flex-1 lg:pr-80 pb-4 lg:pb-0">
         <nav className="bg-white shadow-sm sticky top-0 z-40 border-b border-gray-100">
-          <div className="container mx-auto flex justify-between items-center py-3 px-5">
-            <a href="#" className="text-2xl font-semibold text-[#4E9F3D] tracking-tight">GoPrimeur</a>
+          <div className="container mx-auto flex justify-between items-center py-3 px-4 lg:px-5">
+            <a href="#" className="text-xl lg:text-2xl font-semibold text-[#4E9F3D] tracking-tight">GoPrimeur</a>
             <input
               type="text"
-              placeholder="Rechercher des produits..."
+              placeholder="Rechercher..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border border-gray-300 rounded-full px-4 py-1.5 text-sm focus:ring-1 focus:ring-[#4E9F3D] outline-none text-gray-600"
+              className="border border-gray-300 rounded-full px-3 lg:px-4 py-1.5 text-xs lg:text-sm focus:ring-1 focus:ring-[#4E9F3D] outline-none text-gray-600 w-32 lg:w-auto"
             />
           </div>
         </nav>
@@ -202,7 +229,7 @@ export default function GoPrimeurProductsWithCart() {
         </div>
 
         <section id="product-list" className="container mx-auto px-4 pb-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-3 lg:gap-5">
             {filteredProducts.map((p) => (
                 <div key={p.id} className="bg-white rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition transform duration-200 p-3 text-center group">
                   <div className="relative mb-3">
@@ -226,13 +253,28 @@ export default function GoPrimeurProductsWithCart() {
         </section>
       </div>
 
-      <aside className="w-80 bg-white border-l border-gray-100 shadow-md fixed right-0 top-0 h-full flex flex-col">
+      <aside className={`w-full lg:w-80 bg-white border-l border-gray-100 shadow-md fixed right-0 top-0 h-full flex flex-col z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        isCartOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
         <div className="flex justify-between items-center mb-3 p-5 border-b border-gray-50">
-          <h3 className="text-xl font-semibold text-[#4E9F3D] tracking-tight">Votre panier</h3>
-          <span className="text-lg font-medium text-gray-800">{total.toFixed(2)} €</span>
+          <div className="flex items-center justify-between w-full">
+            <h3 className="text-xl font-semibold text-[#4E9F3D] tracking-tight">Votre panier</h3>
+            <div className="flex items-center gap-3">
+              <span className="text-lg font-medium text-gray-800">{total.toFixed(2)} €</span>
+              <button
+                onClick={() => setIsCartOpen(false)}
+                className="lg:hidden text-gray-500 hover:text-gray-700"
+                aria-label="Close cart"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5">
+        <div className="flex-1 overflow-y-auto px-5 pb-4">
           <div className="bg-[#FAFAFA] border border-gray-100 rounded-md p-3 mb-4 text-xs">
             <div className="w-full bg-gray-200 h-1.5 rounded-full mb-2">
               <div className="bg-[#4E9F3D] h-1.5 rounded-full transition-all duration-300" style={{ width: `${progressOrder}%` }}></div>
@@ -271,19 +313,18 @@ export default function GoPrimeurProductsWithCart() {
           )}
         </div>
 
-        <div className="p-5 border-t border-gray-100 bg-[#F9F9F9] text-center space-y-3">
-
-
+        <div className="p-5 border-t border-gray-100 bg-[#F9F9F9] text-center space-y-3 lg:relative">
           <Link
-  to="/checkout"
-  className={`block w-full py-2 rounded-md font-medium text-center transition ${
-    canProceed
-      ? "bg-[#4E9F3D] text-white hover:bg-green-700"
-      : "bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none"
-  }`}
->
-  Passer à la caisse ({itemCount})
-</Link>
+            to="/checkout"
+            onClick={() => setIsCartOpen(false)}
+            className={`block w-full py-2 lg:py-2 rounded-md font-medium text-center transition ${
+              canProceed
+                ? "bg-[#4E9F3D] text-white hover:bg-green-700"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none"
+            }`}
+          >
+            Passer à la caisse ({itemCount}) - {total.toFixed(2)} €
+          </Link>
 
 
           <div className="grid grid-cols-1 gap-3 text-left">
@@ -298,15 +339,6 @@ export default function GoPrimeurProductsWithCart() {
                 </span>
               </div>
               <p className="text-green-800 text-xs italic mt-2 pl-7">Livraison gratuite à partir de {FREE_DELIVERY_THRESHOLD} €</p>
-            </div>
-
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl py-4 px-4 text-sm text-blue-900 leading-relaxed shadow-sm">
-              <div className="flex items-center gap-3">
-                <span className="text-xl">🕒</span>
-                <p className="text-sm text-blue-800">
-                  <span className="font-bold text-blue-900">Samedi soir</span> livraison si commandé avant <span className="font-semibold">18h00</span>
-                </p>
-              </div>
             </div>
           </div>
         </div>

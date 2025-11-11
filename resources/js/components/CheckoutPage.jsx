@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function CheckoutPage() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -55,8 +56,19 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#F7F6F3] text-[#374151] font-sans flex flex-col items-center py-10">
-      <div className="text-center mb-6">
-        <Link to="/" className="text-3xl font-semibold text-[#4E9F3D] tracking-tight">GoPrimeur</Link>
+      <div className="w-full max-w-3xl mb-6 px-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-gray-600 hover:text-[#4E9F3D] transition-colors mb-4"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          <span className="text-sm font-medium">Retour</span>
+        </button>
+        <div className="text-center">
+          <Link to="/" className="text-3xl font-semibold text-[#4E9F3D] tracking-tight">GoPrimeur</Link>
+        </div>
       </div>
       <div className="bg-white shadow-md rounded-xl w-full max-w-3xl p-8">
         <h1 className="text-2xl font-semibold text-[#4E9F3D] mb-6">Commande</h1>
